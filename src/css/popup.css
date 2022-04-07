@@ -1,0 +1,155 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.sans {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+.mono {
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+}
+
+.system,
+.light {
+  --background: #FFFFFF;
+  --surface: #F6F7F8;
+
+  --primary: rgba(0,0,0,1);
+  --secondary: rgba(0,0,0,0.25);
+
+  --accent-result: rgba(0,0,0,1);
+  --accent-variable: rgba(0,0,0,0.5);
+  --accent-error: rgba(0,0,0,0.5);
+
+  --stroke: rgba(0,0,0,0.06);
+
+  --link-hover: rgba(0,0,0,0.1);
+  --link-active: rgba(0,0,0,0.15);
+}
+
+.dark {
+  --background: #202124;
+  --surface: #292A2D;
+
+  --primary: rgba(255,255,255,0.85);
+  --secondary: rgba(255,255,255,0.25);
+
+  --accent-result: rgba(255,255,255,0.85);
+  --accent-variable: rgba(255,255,255,0.55);
+  --accent-error: rgba(255,255,255,0.55);
+
+  --stroke: rgba(255,255,255,0.08);
+
+  --link-hover: rgba(255,255,255,0.1);
+  --link-active: rgba(255,255,255,0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  .system {
+    --background: #202124;
+    --surface: #292A2D;
+
+    --primary: rgba(255,255,255,0.85);
+    --secondary: rgba(255,255,255,0.25);
+
+    --accent-result: rgba(255,255,255,0.85);
+    --accent-variable: rgba(255,255,255,0.55);
+    --accent-error: rgba(255,255,255,0.55);
+
+    --stroke: rgba(255,255,255,0.1);
+
+    --link-hover: rgba(255,255,255,0.1);
+    --link-active: rgba(255,255,255,0.15);
+  }
+}
+
+html,
+body {
+  height: 420px;
+  width: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+}
+
+.app {
+  background-color: var(--background);
+  display: flex;
+  justify-content: space-between;
+}
+
+.input {
+  color: var(--primary);
+  background-color: transparent;
+  appearance: none;
+  border: none;
+  outline: none;
+  resize: none;
+  flex: 0 0 60%;
+}
+
+.display {
+  background-color: var(--surface);
+  color: var(--primary);
+  border-left: 1px solid var(--stroke);
+  flex: 0 0 40%;
+}
+
+.input,
+.display {
+  font-size: 16px;
+  line-height: 1.4375;
+  min-height: 100vh;
+  overflow-y: visible;
+  overflow-x: auto;
+  padding: 20px;
+  white-space: pre;
+}
+
+.input[placeholder]:empty:before {
+  color: var(--secondary);
+  content: attr(placeholder);
+  pointer-events: none;
+  position: absolute;
+}
+
+.input[placeholder]:empty:focus:before {
+    content: "";
+}
+
+.result {
+  color: var(--accent-result);
+}
+
+.variable {
+  color: var(--accent-variable);
+}
+
+.result,
+.variable {
+  padding: 3px 4px;
+  border-radius: 6px;
+  position: relative;
+  left: -4px;
+}
+
+.error {
+  color: var(--accent-error);
+}
+
+.result:hover,
+.variable:hover {
+  cursor: pointer;
+  color: var(--primary);
+  background-color: var(--link-hover);
+}
+
+.result:active,
+.variable:active {
+  background-color: var(--link-active);
+}
