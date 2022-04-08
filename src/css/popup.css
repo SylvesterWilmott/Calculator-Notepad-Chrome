@@ -23,7 +23,7 @@
 
   --accent-result: rgba(0,0,0,1);
   --accent-variable: rgba(0,0,0,0.5);
-  --accent-error: rgba(0,0,0,0.5);
+  --accent-error: #DE4334;
 
   --stroke: rgba(0,0,0,0.06);
 
@@ -42,7 +42,7 @@
 
   --accent-result: rgba(255,255,255,0.85);
   --accent-variable: rgba(255,255,255,0.55);
-  --accent-error: rgba(255,255,255,0.55);
+  --accent-error: #FF9C92;
 
   --stroke: rgba(255,255,255,0.08);
 
@@ -53,7 +53,7 @@
 @media (prefers-color-scheme: dark) {
   .system {
     color-scheme: dark;
-    
+
     --background: #202124;
     --surface: #292A2D;
 
@@ -80,7 +80,7 @@ body {
 }
 
 body {
-  font-family: Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+  font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
 }
 
 .app {
@@ -96,6 +96,7 @@ body {
   border: none;
   outline: none;
   resize: none;
+  position: relative;
   flex: 0 0 60%;
 }
 
