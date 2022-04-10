@@ -42,7 +42,7 @@
 
   --accent-result: rgba(255,255,255,0.85);
   --accent-variable: rgba(255,255,255,0.55);
-  --accent-error: #FF9C92;
+  --accent-error: #FF796D;
 
   --stroke: rgba(255,255,255,0.08);
 
@@ -62,7 +62,7 @@
 
     --accent-result: rgba(255,255,255,0.85);
     --accent-variable: rgba(255,255,255,0.55);
-    --accent-error: rgba(255,255,255,0.55);
+    --accent-error: #FF796D;
 
     --stroke: rgba(255,255,255,0.1);
 
