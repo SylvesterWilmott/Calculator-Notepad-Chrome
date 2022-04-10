@@ -106,6 +106,7 @@ To change the value of a variable, simply update the variable value in the text 
 To access options, right-click on the extension icon.
 
 - Choose from system, light or dark themes.
+- Choose from sans-serif or monospace fonts.
 
 ## Attributions
 
