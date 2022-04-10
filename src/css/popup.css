@@ -80,7 +80,13 @@ body {
 }
 
 body {
-  font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+  background-color: var(--background);
+  opacity: 1;
+  transition: opacity 250ms ease-out;
+}
+
+.hidden {
+  opacity: 0;
 }
 
 .app {

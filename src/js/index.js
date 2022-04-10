@@ -34,6 +34,8 @@ async function init() {
   displayResults(storedResults);
   setScrollPos(scrollPos);
   initListeners();
+
+  document.body.classList.remove('hidden');
 };
 
 function addConstantsToArray(arr) {
