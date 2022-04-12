@@ -9,6 +9,8 @@ const numberRegex   = /[0-9]/g;
 
 let input;
 let output;
+let stored;
+let expressions = [];
 
 let reserved = ['Mod', 'C', 'P', 'Sigma', 'Pi', 'n', 'root', 'pow', 'log', 'ln', 'sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'asin', 'acos', 'atan', 'asinh', 'acosh', 'atanh'];
 let identifiers = [];
@@ -22,11 +24,15 @@ async function init() {
   addConstantsToArray(reserved);
   addConstantsToArray(identifiers);
 
-  const storedText = await loadFromStorage('text', null);
+  const storedText = await loadFromStorage('text', '');
+  const storedExpressions = await loadFromStorage('expressions', []);
   const storedResults = await loadFromStorage('results', []);
   const scrollPos = await loadFromStorage('scroll', 0);
   const theme = await loadFromStorage('theme', 'system');
   const font = await loadFromStorage('font', 'mono');
+
+  stored = storedText;
+  expressions = storedExpressions;
 
   addPrefClass(theme);
   addPrefClass(font);
@@ -137,72 +143,108 @@ async function start(value) {
   let results = await getResults(expressions);
 
   displayResults(results);
+  saveToStorage('expressions', expressions);
   saveToStorage('text', value);
   saveToStorage('results', results);
+
+  stored = value;
 };
 
 function parse(value) {
   return new Promise((resolve, reject) => {
     let lines = value.split('\n');
-    let expressions = [];
+    let storedLines = stored.split('\n');
     let pass;
 
-    for (const line of lines) {
+    let isEdited = false;
+
+    for (const [i, line] of lines.entries()) {
       let str = line;
       let comment = str.match(commentRegex);
       let variable = str.match(variableRegex);
       let words = str.match(wordRegex);
 
-      if (str.length === 0) {
-        pass = {
-          type: 'newline',
-          value: ''
-        }
-      } else if (comment) {
-        pass = {
-          type: 'comment',
-          value: str.trim()
-        }
-      } else if (variable) {
-        pass = getVariableObject(str, expressions);
-      } else {
-        let tmp = str;
+      if (str !== storedLines[i]) {
+        isEdited = true;
+      }
 
-        if (tmp.includes('=')) {
-          tmp = tmp.replace('=', '');
-        }
+      if (words) {
+        for (const word of words) {
+          let w = word.trim();
+          let isReferencedVariable = expressions.find(x => x.name === w);
 
-        if (words) {
-          for (const word of words) {
-            let isConstant = validateWord(identifiers, word);
-
-            if (isConstant) {
-              let find = constants.constants.find(x => x.indentifier === word);
-              tmp = replaceTextWithValue(tmp, word, find.value);
-            }
-
-            let obj = expressions.find(x => x.name === word);
-            tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
-          }
-        }
-
-        if (tmp.match(numberRegex)) {
-          pass = {
-            type: 'expression',
-            value: tmp.trim()
-          }
-        } else {
-          pass = {
-            type: 'comment',
-            value: tmp.trim()
+          if (isReferencedVariable) {
+            isEdited = true;
           }
         }
       }
 
-      expressions.push(pass);
+      if (isEdited) {
+        isEdited = false;
+
+        console.log('Edited string:', str);
+
+        if (str.length === 0) {
+          pass = {
+            type: 'newline',
+            value: ''
+          }
+        } else if (comment) {
+          pass = {
+            type: 'comment',
+            value: str.trim()
+          }
+        } else if (variable) {
+          pass = getVariableObject(str, expressions, i);
+        } else {
+          let tmp = str;
+
+          if (tmp.includes('=')) {
+            tmp = tmp.replace('=', '');
+          }
+
+          if (words) {
+            for (const word of words) {
+              let isConstant = validateWord(identifiers, word);
+
+              if (isConstant) {
+                let find = constants.constants.find(x => x.indentifier === word);
+                tmp = replaceTextWithValue(tmp, word, find.value);
+              }
+
+              let obj = expressions.find(x => x.name === word);
+              tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
+            }
+          }
+
+          if (tmp.match(numberRegex)) {
+            let result;
+            let val = tmp.trim();
+
+            try {
+              result = mexp.eval(val);
+            } catch (err) {
+              result;
+            }
+
+            pass = {
+              type: 'expression',
+              value: tmp.trim(),
+              result: result
+            }
+          } else {
+            pass = {
+              type: 'comment',
+              value: tmp.trim()
+            }
+          }
+        }
+
+        expressions[i] = pass;
+      }
     }
 
-    function getVariableObject(str, expressions) {
+    function getVariableObject(str, expressions, i) {
       if (str.includes('is')) {
         str = str.replace(/\bis\b/g, '=');
       }
@@ -212,7 +254,7 @@ function parse(value) {
       let value = split[1].trim();
 
       let isReserved = validateWord(reserved, name);
-      let isExistingVariable = expressions.find(x => x.name === name);
+      let isExistingVariableIndex = expressions.findIndex(x => x.name === name);
 
       if (isReserved) {
         return {
@@ -222,7 +264,8 @@ function parse(value) {
         }
       }
 
-      if (isExistingVariable) {
+      if (isExistingVariableIndex < i && isExistingVariableIndex !== -1) {
+        console.log(isExistingVariableIndex, i);
         return {
           type: 'error',
           name: name,
@@ -279,6 +322,8 @@ function parse(value) {
       return '\\b' + str + '\\b';
     };
 
+    expressions.length = lines.length;
+
     resolve(expressions);
   });
 };
@@ -309,13 +354,7 @@ function getResults(expressions) {
           });
           break;
         case 'expression':
-          let result;
-
-          try {
-            result = mexp.eval(expression.value);
-          } catch (err) {
-            result;
-          }
+          let result = expression.result;
 
           if (isNaN(result) || result == null) {
             tmp.push({
@@ -338,11 +377,11 @@ function getResults(expressions) {
 
 // Event handlers
 
-const handleInput = debounce(function(e){
+function handleInput(e) {
   const value = input.innerText;
 
   start(value);
-}, 500);
+};
 
 const handleScroll = debounce(function(e){
   saveToStorage('scroll', document.body.scrollTop);
