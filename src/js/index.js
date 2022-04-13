@@ -21,25 +21,26 @@ async function init() {
   input = document.getElementById('input');
   output = document.getElementById('output');
 
-  console.log({stored, expressions});
-
   addConstantsToArray(reserved);
   addConstantsToArray(identifiers);
 
   const storedText = await loadFromStorage('text', '');
-  const storedExpressions = await loadFromStorage('expressions', []);
-  const storedResults = await loadFromStorage('results', []);
   const scrollPos = await loadFromStorage('scroll', 0);
   const theme = await loadFromStorage('theme', 'system');
   const font = await loadFromStorage('font', 'mono');
 
   stored = storedText;
-  expressions = storedExpressions;
+
+  const initParse = await parse(storedText, 'init');
+
+  expressions = initParse;
+
+  const initResults = await getResults(expressions);
 
   addPrefClass(theme);
   addPrefClass(font);
   displayExpressions(storedText);
-  displayResults(storedResults);
+  displayResults(initResults);
   setScrollPos(scrollPos);
   initListeners();
 
@@ -56,8 +57,8 @@ function addPrefClass(className) {
   document.body.classList.add(className);
 };
 
-function displayExpressions(expressions) {
-  input.innerHTML = expressions;
+function displayExpressions(text) {
+  input.innerHTML = text;
 };
 
 function displayResults(results) {
@@ -141,52 +142,58 @@ function clearInnerText(el) {
 async function start(value) {
   clearInnerText(output);
 
-  console.log(value);
-
   let parsed = await parse(value);
-  let results = await getResults(parsed);
+
+  expressions = parsed;
+
+  let results = await getResults(expressions);
 
   displayResults(results);
-  saveToStorage('expressions', parsed);
   saveToStorage('text', value);
-  saveToStorage('results', results);
 
   stored = value;
 };
 
-function parse(value) {
+function parse(value, src) {
   return new Promise((resolve, reject) => {
     let lines = value.split('\n');
     let storedLines = stored.split('\n');
     let pass;
 
     let isEdited = false;
+    let updatedVariables = [];
 
     for (const [i, line] of lines.entries()) {
       let str = line;
       let comment = str.match(commentRegex);
       let variable = str.match(variableRegex);
       let words = str.match(wordRegex);
+      let diff = str !== storedLines[i];
 
-      if (str !== storedLines[i]) {
+      if (diff) {
         isEdited = true;
-      }
-
-       else if (words) {
-        for (const word of words) {
-          let w = word.trim();
-          let isReferencedVariable = expressions.find(x => x.name === w);
-
-          if (isReferencedVariable) {
-            isEdited = true;
+        
+        if (variable) {
+          if (str.includes('is')) {
+            str = str.replace(/\bis\b/g, '=');
           }
+
+          let name = str.split('=')[0].trim();
+
+          updatedVariables.push(name);
         }
       }
 
-      if (isEdited) {
-        isEdited = false;
+      for (const updatedVariable of updatedVariables) {
+        if (str.includes(updatedVariable)) {
+          isEdited = true;
+        }
+      }
 
-        console.log('Edited string:', str);
+      if (isEdited || src === 'init') {
+        console.log({ Modified: line });
+
+        isEdited = false;
 
         if (str.length === 0) {
           pass = {
@@ -269,7 +276,6 @@ function parse(value) {
       }
 
       if (isExistingVariableIndex < i && isExistingVariableIndex !== -1) {
-        console.log(isExistingVariableIndex, i);
         return {
           type: 'error',
           name: name,
