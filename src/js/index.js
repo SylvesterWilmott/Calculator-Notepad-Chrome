@@ -393,11 +393,11 @@ function getResults(parsed) {
 
 // Event handlers
 
-function handleInput(e) {
+const handleInput = debounce(function(e) {
   const value = input.innerText;
 
   start(value);
-};
+}, 500);
 
 const handleScroll = debounce(function(e) {
   saveToStorage('scroll', document.body.scrollTop);
