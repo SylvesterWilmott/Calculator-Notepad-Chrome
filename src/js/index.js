@@ -195,8 +195,6 @@ function parse(value, src) {
       }
 
       if (isEdited || src === 'init') {
-        console.log({ Modified: line });
-
         isEdited = false;
 
         if (str.length === 0) {
