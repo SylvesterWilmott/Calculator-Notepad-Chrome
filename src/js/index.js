@@ -9,6 +9,8 @@ const numberRegex   = /[0-9]/g;
 
 let input;
 let output;
+let stored;
+let expressions = [];
 
 let reserved = ['Mod', 'C', 'P', 'Sigma', 'Pi', 'n', 'root', 'pow', 'log', 'ln', 'sin', 'cos', 'tan', 'sinh', 'cosh', 'tanh', 'asin', 'acos', 'atan', 'asinh', 'acosh', 'atanh'];
 let identifiers = [];
@@ -22,16 +24,23 @@ async function init() {
   addConstantsToArray(reserved);
   addConstantsToArray(identifiers);
 
-  const storedText = await loadFromStorage('text', null);
-  const storedResults = await loadFromStorage('results', []);
+  const storedText = await loadFromStorage('text', '');
   const scrollPos = await loadFromStorage('scroll', 0);
   const theme = await loadFromStorage('theme', 'system');
   const font = await loadFromStorage('font', 'mono');
 
+  stored = storedText;
+
+  const initParse = await parse(storedText, 'init');
+
+  expressions = initParse;
+
+  const initResults = await getResults(expressions);
+
   addPrefClass(theme);
   addPrefClass(font);
   displayExpressions(storedText);
-  displayResults(storedResults);
+  displayResults(initResults);
   setScrollPos(scrollPos);
   initListeners();
 
@@ -48,8 +57,8 @@ function addPrefClass(className) {
   document.body.classList.add(className);
 };
 
-function displayExpressions(expressions) {
-  input.innerHTML = expressions;
+function displayExpressions(text) {
+  input.innerHTML = text;
 };
 
 function displayResults(results) {
@@ -133,78 +142,128 @@ function clearInnerText(el) {
 async function start(value) {
   clearInnerText(output);
 
-  let expressions = await parse(value);
+  let parsed = await parse(value);
+
+  expressions = parsed;
+
   let results = await getResults(expressions);
 
   displayResults(results);
   saveToStorage('text', value);
-  saveToStorage('results', results);
+
+  stored = value;
 };
 
-function parse(value) {
+function parse(value, src) {
   return new Promise((resolve, reject) => {
     let lines = value.split('\n');
-    let expressions = [];
+    let storedLines = stored.split('\n');
     let pass;
 
-    for (const line of lines) {
+    let isEdited = false;
+    let updatedVariables = [];
+
+    for (const [i, line] of lines.entries()) {
       let str = line;
       let comment = str.match(commentRegex);
       let variable = str.match(variableRegex);
       let words = str.match(wordRegex);
+      let diff = str !== storedLines[i];
 
-      if (str.length === 0) {
-        pass = {
-          type: 'newline',
-          value: ''
-        }
-      } else if (comment) {
-        pass = {
-          type: 'comment',
-          value: str.trim()
-        }
-      } else if (variable) {
-        pass = getVariableObject(str, expressions);
-      } else {
-        let tmp = str;
+      if (diff) {
+        isEdited = true;
 
-        if (tmp.includes('=')) {
-          tmp = tmp.replace('=', '');
-        }
+        if (variable) {
+          let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
 
-        if (words) {
-          for (const word of words) {
-            let isConstant = validateWord(identifiers, word);
-
-            if (isConstant) {
-              let find = constants.constants.find(x => x.indentifier === word);
-              tmp = replaceTextWithValue(tmp, word, find.value);
-            }
-
-            let obj = expressions.find(x => x.name === word);
-            tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
+          if (str.match(equalsBoundary)) {
+            str = str.replace(equalsBoundary, '=');
           }
-        }
 
-        if (tmp.match(numberRegex)) {
-          pass = {
-            type: 'expression',
-            value: tmp.trim()
-          }
-        } else {
-          pass = {
-            type: 'comment',
-            value: tmp.trim()
-          }
+          let name = str.split('=')[0].trim();
+
+          updatedVariables.push(name);
         }
       }
 
-      expressions.push(pass);
+      for (const variable of updatedVariables) {
+        let nameBoundary = new RegExp(makeRegexBoundary(variable) , 'g');
+
+        if (str.match(nameBoundary)) {
+          isEdited = true;
+        }
+      }
+
+      if (isEdited || src === 'init') {
+        console.log({ Modified: line });
+
+        isEdited = false;
+
+        if (str.length === 0) {
+          pass = {
+            type: 'newline',
+            value: ''
+          }
+        } else if (comment) {
+          pass = {
+            type: 'comment',
+            value: str.trim()
+          }
+        } else if (variable) {
+          pass = getVariableObject(str, expressions, i);
+        } else {
+          let tmp = str;
+
+          if (tmp.includes('=')) {
+            tmp = tmp.replace('=', '');
+          }
+
+          if (words) {
+            for (const word of words) {
+              let isConstant = validateWord(identifiers, word);
+
+              if (isConstant) {
+                let find = constants.constants.find(x => x.indentifier === word);
+                tmp = replaceTextWithValue(tmp, word, find.value);
+              }
+
+              let obj = expressions.find(x => x.name === word);
+              tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
+            }
+          }
+
+          if (tmp.match(numberRegex)) {
+            let result;
+            let val = tmp.trim();
+
+            try {
+              result = mexp.eval(val);
+            } catch (err) {
+              result;
+            }
+
+            pass = {
+              type: 'expression',
+              value: tmp.trim(),
+              result: result
+            }
+          } else {
+            pass = {
+              type: 'comment',
+              value: tmp.trim()
+            }
+          }
+        }
+
+        expressions[i] = pass;
+      }
     }
 
-    function getVariableObject(str, expressions) {
-      if (str.includes('is')) {
-        str = str.replace(/\bis\b/g, '=');
+    function getVariableObject(str, expressions, i) {
+      let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
+
+      if (str.match(equalsBoundary)) {
+        str = str.replace(equalsBoundary, '=');
       }
 
       let split = str.split('=');
@@ -212,7 +271,7 @@ function parse(value) {
       let value = split[1].trim();
 
       let isReserved = validateWord(reserved, name);
-      let isExistingVariable = expressions.find(x => x.name === name);
+      let isExistingVariableIndex = expressions.findIndex(x => x.name === name);
 
       if (isReserved) {
         return {
@@ -222,7 +281,7 @@ function parse(value) {
         }
       }
 
-      if (isExistingVariable) {
+      if (isExistingVariableIndex < i && isExistingVariableIndex !== -1) {
         return {
           type: 'error',
           name: name,
@@ -272,22 +331,24 @@ function parse(value) {
     };
 
     function replaceTextWithValue(str, find, replace) {
-      return str.replace(new RegExp(escapeRegExp(find), 'gi'), replace);
+      return str.replace(new RegExp(makeRegexBoundary(find), 'gi'), replace);
     };
 
-    function escapeRegExp(str) {
+    function makeRegexBoundary(str) {
       return '\\b' + str + '\\b';
     };
+
+    expressions.length = lines.length;
 
     resolve(expressions);
   });
 };
 
-function getResults(expressions) {
+function getResults(parsed) {
   return new Promise((resolve, reject) => {
     let tmp = [];
 
-    for (const expression of expressions) {
+    for (const expression of parsed) {
       switch (expression.type) {
         case 'newline':
         case 'comment':
@@ -309,13 +370,7 @@ function getResults(expressions) {
           });
           break;
         case 'expression':
-          let result;
-
-          try {
-            result = mexp.eval(expression.value);
-          } catch (err) {
-            result;
-          }
+          let result = expression.result;
 
           if (isNaN(result) || result == null) {
             tmp.push({
@@ -338,13 +393,13 @@ function getResults(expressions) {
 
 // Event handlers
 
-const handleInput = debounce(function(e){
+const handleInput = debounce(function(e) {
   const value = input.innerText;
 
   start(value);
 }, 500);
 
-const handleScroll = debounce(function(e){
+const handleScroll = debounce(function(e) {
   saveToStorage('scroll', document.body.scrollTop);
 }, 500);
 

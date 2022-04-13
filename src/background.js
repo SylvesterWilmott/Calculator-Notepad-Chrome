@@ -80,7 +80,7 @@ chrome.contextMenus.onClicked.addListener(function(info) {
 
   switch(menuId) {
     case 'clear':
-      clearFromStorage('text', 'results');
+      clearFromStorage('text');
       break;
     case 'resetPrefs':
       clearFromStorage('theme', 'font');
