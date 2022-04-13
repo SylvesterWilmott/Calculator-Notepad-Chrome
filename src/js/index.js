@@ -174,8 +174,10 @@ function parse(value, src) {
         isEdited = true;
 
         if (variable) {
-          if (str.includes('is')) {
-            str = str.replace(/\bis\b/g, '=');
+          let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
+
+          if (str.match(equalsBoundary)) {
+            str = str.replace(equalsBoundary, '=');
           }
 
           let name = str.split('=')[0].trim();
@@ -184,8 +186,10 @@ function parse(value, src) {
         }
       }
 
-      for (const updatedVariable of updatedVariables) {
-        if (str.includes(updatedVariable)) {
+      for (const variable of updatedVariables) {
+        let nameBoundary = new RegExp(makeRegexBoundary(variable) , 'g');
+
+        if (str.match(nameBoundary)) {
           isEdited = true;
         }
       }
@@ -256,8 +260,10 @@ function parse(value, src) {
     }
 
     function getVariableObject(str, expressions, i) {
-      if (str.includes('is')) {
-        str = str.replace(/\bis\b/g, '=');
+      let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
+
+      if (str.match(equalsBoundary)) {
+        str = str.replace(equalsBoundary, '=');
       }
 
       let split = str.split('=');
@@ -325,10 +331,10 @@ function parse(value, src) {
     };
 
     function replaceTextWithValue(str, find, replace) {
-      return str.replace(new RegExp(escapeRegExp(find), 'gi'), replace);
+      return str.replace(new RegExp(makeRegexBoundary(find), 'gi'), replace);
     };
 
-    function escapeRegExp(str) {
+    function makeRegexBoundary(str) {
       return '\\b' + str + '\\b';
     };
 
