@@ -139,11 +139,11 @@ function clearInnerText(el) {
 async function start(value) {
   clearInnerText(output);
 
-  let expressions = await parse(value);
-  let results = await getResults(expressions);
+  let parsed = await parse(value);
+  let results = await getResults(parsed);
 
   displayResults(results);
-  saveToStorage('expressions', expressions);
+  saveToStorage('expressions', parsed);
   saveToStorage('text', value);
   saveToStorage('results', results);
 
@@ -328,11 +328,12 @@ function parse(value) {
   });
 };
 
-function getResults(expressions) {
+function getResults(parsed) {
+  console.log(parsed);
   return new Promise((resolve, reject) => {
     let tmp = [];
 
-    for (const expression of expressions) {
+    for (const expression of parsed) {
       switch (expression.type) {
         case 'newline':
         case 'comment':
