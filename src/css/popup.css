@@ -18,10 +18,10 @@
   --background: #FFFFFF;
   --surface: #F6F7F8;
 
-  --primary: rgba(0,0,0,1);
+  --primary: rgba(0,0,0,0.85);
   --secondary: rgba(0,0,0,0.25);
 
-  --accent-result: rgba(0,0,0,1);
+  --accent-result: rgba(0,0,0,0.85);
   --accent-variable: rgba(0,0,0,0.5);
   --accent-error: #DE4334;
 
