@@ -172,7 +172,7 @@ function parse(value, src) {
 
       if (diff) {
         isEdited = true;
-        
+
         if (variable) {
           if (str.includes('is')) {
             str = str.replace(/\bis\b/g, '=');
