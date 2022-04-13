@@ -393,7 +393,7 @@ function handleInput(e) {
   start(value);
 };
 
-const handleScroll = debounce(function(e){
+const handleScroll = debounce(function(e) {
   saveToStorage('scroll', document.body.scrollTop);
 }, 500);
 
