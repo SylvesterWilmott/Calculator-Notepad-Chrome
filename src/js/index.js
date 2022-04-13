@@ -168,7 +168,7 @@ function parse(value) {
         isEdited = true;
       }
 
-      if (words) {
+       else if (words) {
         for (const word of words) {
           let w = word.trim();
           let isReferencedVariable = expressions.find(x => x.name === w);
