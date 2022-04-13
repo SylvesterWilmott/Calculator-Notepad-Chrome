@@ -21,6 +21,8 @@ async function init() {
   input = document.getElementById('input');
   output = document.getElementById('output');
 
+  console.log({stored, expressions});
+
   addConstantsToArray(reserved);
   addConstantsToArray(identifiers);
 
@@ -138,6 +140,8 @@ function clearInnerText(el) {
 
 async function start(value) {
   clearInnerText(output);
+
+  console.log(value);
 
   let parsed = await parse(value);
   let results = await getResults(parsed);
@@ -329,7 +333,6 @@ function parse(value) {
 };
 
 function getResults(parsed) {
-  console.log(parsed);
   return new Promise((resolve, reject) => {
     let tmp = [];
 
