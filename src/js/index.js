@@ -212,7 +212,7 @@ function parse(value, src) {
               let matches = [...str.matchAll(numberSuffixRegex)];
 
               for (const match of matches) {
-                let orig = match[0];
+                let m = match[0];
                 let value = match[1];
                 let modifier = match[2];
                 let newValue;
@@ -221,15 +221,15 @@ function parse(value, src) {
                   case 'k':
                   case 'K':
                     newValue = value * 1000;
-                    str = str.replace(orig, newValue);
+                    str = str.replace(m, newValue);
                     break;
                   case 'M':
                     newValue = value * 1000000;
-                    str = str.replace(orig, newValue);
+                    str = str.replace(m, newValue);
                     break;
                   case 'B':
                     newValue = value * 1000000000;
-                    str = str.replace(orig, newValue);
+                    str = str.replace(m, newValue);
                     break;
                 }
               }
