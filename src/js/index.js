@@ -336,7 +336,9 @@ function parse(value, src) {
       return '\\b' + str + '\\b';
     };
 
-    expressions.length = lines.length;
+    if (expressions.length !== lines.length) {
+      expressions.length = lines.length;
+    }
 
     resolve(expressions);
   });
