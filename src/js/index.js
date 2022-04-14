@@ -5,7 +5,7 @@ import * as constants from './constants.js';
 const commentRegex  = /^[\/]{2}(.*?)$/gm;
 const variableRegex = /^\s*([a-zA-Z_]+) ?(\bis\b|=) ?([^=]+)$/gm;
 const wordRegex     = /[a-z_]+/gi;
-const numberRegex   = /[0-9]/g;
+const numberSuffixRegex = /([0-9.]+)([KkMB]{1}\b)/g;
 
 let input;
 let output;
@@ -207,50 +207,79 @@ function parse(value, src) {
             type: 'comment',
             value: str.trim()
           }
-        } else if (variable) {
-          pass = getVariableObject(str, expressions, i);
         } else {
-          let tmp = str;
+            if (str.match(numberSuffixRegex)) {
+              let matches = [...str.matchAll(numberSuffixRegex)];
 
-          if (tmp.includes('=')) {
-            tmp = tmp.replace('=', '');
-          }
+              for (const match of matches) {
+                let orig = match[0];
+                let value = match[1];
+                let modifier = match[2];
+                let newValue;
 
-          if (words) {
-            for (const word of words) {
-              let isConstant = validateWord(identifiers, word);
+                switch (modifier) {
+                  case 'k':
+                  case 'K':
+                    newValue = value * 1000;
+                    str = str.replace(orig, newValue);
+                    break;
+                  case 'M':
+                    newValue = value * 1000000;
+                    str = str.replace(orig, newValue);
+                    break;
+                  case 'B':
+                    newValue = value * 1000000000;
+                    str = str.replace(orig, newValue);
+                    break;
+                }
+              }
+            }
 
-              if (isConstant) {
-                let find = constants.constants.find(x => x.indentifier === word);
-                tmp = replaceTextWithValue(tmp, word, find.value);
+            if (variable) {
+              pass = getVariableObject(str, expressions, i);
+            } else {
+              let tmp = str;
+
+              if (tmp.includes('=')) {
+                tmp = tmp.replace('=', '');
               }
 
-              let obj = expressions.find(x => x.name === word);
-              tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
-            }
-          }
+              if (words) {
+                for (const word of words) {
+                  let isConstant = validateWord(identifiers, word);
 
-          if (tmp.match(numberRegex)) {
-            let result;
-            let val = tmp.trim();
+                  if (isConstant) {
+                    let find = constants.constants.find(x => x.indentifier === word);
+                    tmp = replaceTextWithValue(tmp, word, find.value);
+                  }
 
-            try {
-              result = mexp.eval(val);
-            } catch (err) {
-              result;
-            }
+                  let obj = expressions.find(x => x.name === word);
+                  tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
+                }
+              }
 
-            pass = {
-              type: 'expression',
-              value: tmp.trim(),
-              result: result
+              if (hasNumber(tmp)) {
+                let result;
+                let val = tmp.trim();
+
+                try {
+                  result = mexp.eval(val);
+                } catch (err) {
+                  result;
+                }
+
+                pass = {
+                  type: 'expression',
+                  value: tmp.trim(),
+                  result: result
+                }
+              } else {
+                pass = {
+                  type: 'comment',
+                  value: tmp.trim()
+                }
+              }
             }
-          } else {
-            pass = {
-              type: 'comment',
-              value: tmp.trim()
-            }
-          }
         }
 
         expressions[i] = pass;
@@ -334,6 +363,10 @@ function parse(value, src) {
 
     function makeRegexBoundary(str) {
       return '\\b' + str + '\\b';
+    };
+
+    function hasNumber(str) {
+      return /\d/.test(str);
     };
 
     if (expressions.length !== lines.length) {
