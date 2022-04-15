@@ -224,16 +224,6 @@ function parse(value, src) {
             }
 
             if (variable) {
-              let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
-
-              if (str.match(equalsBoundary)) {
-                str = str.replace(equalsBoundary, '=');
-              }
-
-              let name = str.split('=')[0].trim();
-
-              updatedVariables.push(name);
-
               pass = getVariableObject(str, expressions, i);
             } else {
               let tmp = str;
@@ -294,6 +284,8 @@ function parse(value, src) {
       let split = str.split('=');
       let name = split[0].trim();
       let value = split[1].trim();
+
+      updatedVariables.push(name);
 
       let isReserved = validateWord(reserved, name);
       let isExistingVariableIndex = expressions.findIndex(x => x.name === name);
