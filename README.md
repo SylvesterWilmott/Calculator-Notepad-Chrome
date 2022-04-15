@@ -20,7 +20,7 @@ Calculator Notepad will analyse each line in the input and attempt to calculate 
 200 - (50 + 50)
 ```
 
-To help give context to your calculations, you can type notes which Calculator Notepad will recognise as a `comment`. A comment can also be defined by starting the line with `//`.
+To help give context to your calculations, you can type notes which Calculator Notepad will recognise as a `comment`. A comment can also be defined by starting the line with `//` or ending it with `:`.
 
 ```
 Total amount:
