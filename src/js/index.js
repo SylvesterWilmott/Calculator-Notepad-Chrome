@@ -2,10 +2,10 @@
 
 import * as constants from './constants.js';
 
-const commentRegex  = /^[\/]{2}(.*?)$/gm;
-const variableRegex = /^\s*([a-zA-Z_]+) ?(\bis\b|=) ?([^=]+)$/gm;
-const wordRegex     = /[a-z_]+/gi;
-const numberSuffixRegex = /([0-9.]+)([KkMB]{1}\b)/g;
+const commentRegex      = /^[\/]{2}(.*?)$/gm;
+const variableRegex     = /^\s*([a-zA-Z_]+) ?(\bis\b|=) ?([^=]+)$/gm;
+const wordRegex         = /[a-z_]+/gi;
+const numberSuffixRegex = /(\d+(?:\.\d+)?)([KkMB]{1}\b)/g;
 
 let input;
 let output;
@@ -172,18 +172,6 @@ function parse(value, src) {
 
       if (diff) {
         isEdited = true;
-
-        if (variable) {
-          let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
-
-          if (str.match(equalsBoundary)) {
-            str = str.replace(equalsBoundary, '=');
-          }
-
-          let name = str.split('=')[0].trim();
-
-          updatedVariables.push(name);
-        }
       }
 
       for (const variable of updatedVariables) {
@@ -236,6 +224,16 @@ function parse(value, src) {
             }
 
             if (variable) {
+              let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
+
+              if (str.match(equalsBoundary)) {
+                str = str.replace(equalsBoundary, '=');
+              }
+
+              let name = str.split('=')[0].trim();
+
+              updatedVariables.push(name);
+
               pass = getVariableObject(str, expressions, i);
             } else {
               let tmp = str;
