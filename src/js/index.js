@@ -3,6 +3,7 @@
 import * as constants from './constants.js';
 
 const commentRegex      = /^[\/]{2}(.*?)$/gm;
+const headingRegex      = /^(.*?):$/gm;
 const variableRegex     = /^\s*([a-zA-Z_]+) ?(\bis\b|=) ?([^=]+)$/gm;
 const wordRegex         = /[a-z_]+/gi;
 const numberSuffixRegex = /(\d+(?:\.\d+)?)([KkMB]{1}\b)/g;
@@ -166,6 +167,7 @@ function parse(value, src) {
     for (const [i, line] of lines.entries()) {
       let str = line;
       let comment = str.match(commentRegex);
+      let heading = str.match(headingRegex);
       let variable = str.match(variableRegex);
       let words = str.match(wordRegex);
       let diff = str !== storedLines[i];
@@ -190,7 +192,7 @@ function parse(value, src) {
             type: 'newline',
             value: ''
           }
-        } else if (comment) {
+        } else if (comment || heading) {
           pass = {
             type: 'comment',
             value: str.trim()
