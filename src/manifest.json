@@ -1,7 +1,7 @@
 {
   "name": "Calculator Notepad",
   "description": "A free-form calculator notepad that performs calculations as you type.",
-  "version": "1.3.11",
+  "version": "1.3.12",
   "manifest_version": 3,
   "icons": {
     "16": "images/icon16.png",
