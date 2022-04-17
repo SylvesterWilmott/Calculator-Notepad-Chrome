@@ -317,7 +317,9 @@ function tokenize(value, src) {
       }
     }
 
-    let boundary = /^[0-9]+$/gm;
+    // Account for decimals here
+
+    let boundary = /^(\d+(?:\.\d+)?)$/gm;
 
     if (value.match(boundary)) {
       value = value;
