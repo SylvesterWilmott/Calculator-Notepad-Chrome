@@ -1,8 +1,6 @@
 'use strict';
 
-export { constants };
-
-const constants = [
+export const constants = [
   {
     name: 'Pi',
     indentifier: 'pi',
@@ -19,3 +17,5 @@ const constants = [
     value: 1.618
   }
 ];
+
+export let identifiers = [];
