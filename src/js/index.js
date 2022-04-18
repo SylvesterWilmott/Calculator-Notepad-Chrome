@@ -51,7 +51,7 @@ function addclassToBody(...args) {
 };
 
 function updateInputDisplay(text) {
-  input.innerHTML = text;
+  input.innerText = text;
 };
 
 function updateOutputDisplay(results) {
@@ -316,9 +316,7 @@ function tokenize(value, src) {
       }
     }
 
-    // Account for decimals here
-
-    let boundary = /^(\d+(?:\.\d+)?)$/gm;
+    let boundary = /^(\d+(?:\.\d+)?)$/gm; // Any number with optional decimal point
 
     if (value.match(boundary)) {
       value = value;
