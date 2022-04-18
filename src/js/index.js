@@ -6,8 +6,8 @@ import * as reserved from './reserved.js';
 
 let input;
 let output;
-let lastEdit; // Last known edit
-let expressions = []; // All tokenized expressions
+let lastEdit = []; // Last known edit by line
+let expressions = []; // All tokenized expressions by line
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -23,7 +23,7 @@ async function init() {
   const theme = await loadFromStorage('theme', 'system');
   const font = await loadFromStorage('font', 'mono');
 
-  lastEdit = storedText;
+  lastEdit = storedText.split('\n');
 
   tokenize(storedText, 'init'); // Tokens are added to expressions array
 
@@ -51,7 +51,7 @@ function addclassToBody(...args) {
 };
 
 function updateInputDisplay(text) {
-  input.innerHTML = text;
+  input.innerText = text;
 };
 
 function updateOutputDisplay(results) {
@@ -142,12 +142,11 @@ function startParse(value) {
   updateOutputDisplay(results);
   saveToStorage('text', value);
 
-  lastEdit = value;
+  lastEdit = value.split('\n');
 };
 
 function tokenize(value, src) {
   let lines = value.split('\n');
-  let storedLines = lastEdit.split('\n');
   let pass;
 
   let isEdited = false;
@@ -160,7 +159,7 @@ function tokenize(value, src) {
     let variable = str.match(regex.variableRegex);
     let words = str.match(regex.wordRegex);
 
-    if (str !== storedLines[i]) {
+    if (str !== lastEdit[i]) {
       isEdited = true; // Mark lines that are edited
     }
 
@@ -317,9 +316,7 @@ function tokenize(value, src) {
       }
     }
 
-    // Account for decimals here
-
-    let boundary = /^(\d+(?:\.\d+)?)$/gm;
+    let boundary = /^(\d+(?:\.\d+)?)$/gm; // Any number with optional decimal point
 
     if (value.match(boundary)) {
       value = value;
@@ -359,8 +356,6 @@ function tokenize(value, src) {
   if (expressions.length !== lines.length) {
     expressions.length = lines.length;
   }
-
-  return;
 };
 
 function getResultTokens() {
@@ -392,8 +387,8 @@ function getResultTokens() {
 
         if (isNaN(result) || result == null) {
           results.push({
-            type: 'error',
-            value: 'Error'
+            type: 'null',
+            value: ''
           });
         } else {
           results.push({
@@ -410,11 +405,11 @@ function getResultTokens() {
 
 // Event handlers
 
-const handleInput = debounce(function(e) {
+function handleInput(e) {
   const value = input.innerText;
 
   startParse(value);
-}, 500);
+};
 
 const handleScroll = debounce(function(e) {
   saveToStorage('scroll', document.body.scrollTop);
