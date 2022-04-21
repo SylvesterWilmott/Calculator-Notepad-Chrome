@@ -127,7 +127,7 @@ function loadFromStorage(key, defaults) {
       [key]: defaults
     }, function(value) {
       if (chrome.runtime.lastError) {
-        console.log(err.message);
+        console.log(chrome.runtime.lastError.message);
       }
 
       resolve(value[key]);
