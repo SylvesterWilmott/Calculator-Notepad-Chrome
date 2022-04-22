@@ -116,10 +116,10 @@ async function updateRadioControls() {
   let theme = await storage.load('theme', 'system');
   let font  = await storage.load('font', 'mono');
 
-  checkRadioControl(theme, font);
+  checkRadio(theme, font);
 };
 
-function checkRadioControl(...ids) {
+function checkRadio(...ids) {
   for (const id of ids) {
     chrome.contextMenus.update(id, {
       checked: true
