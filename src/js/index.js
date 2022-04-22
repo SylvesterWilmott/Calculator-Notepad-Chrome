@@ -17,35 +17,24 @@ async function init() {
   input = document.getElementById('input');
   output = document.getElementById('output');
 
-  const data = await loadUserData();
-
-  initConstants();
-  populateLastEdit(data.text);
-
-  tokenize(data.text, 'init');
-
-  const results = getResultTokens();
-
-  addclassToBody(data.theme, data.font);
-  updateInputDisplay(data.text);
-  updateOutputDisplay(results);
-  setScrollPos(data.scroll);
-  initListeners();
-  showUi();
-};
-
-async function loadUserData() {
   const text   = await storage.load('text', '');
   const scroll = await storage.load('scroll', 0);
   const theme  = await storage.load('theme', 'system');
   const font   = await storage.load('font', 'mono');
 
-  return {
-    text: text,
-    scroll: scroll,
-    theme: theme,
-    font: font
-  }
+  initConstants();
+  populateLastEdit(text);
+
+  tokenize(text, 'init');
+
+  const results = getResultTokens();
+
+  addclassToBody(theme, font);
+  updateInputDisplay(text);
+  updateOutputDisplay(results);
+  setScrollPos(scroll);
+  initListeners();
+  showUi();
 };
 
 function populateLastEdit(value) {
@@ -146,15 +135,6 @@ function clearInnerText(element) {
   element.innerText = '';
 };
 
-function debounce(callback, wait) {
-  let timeout;
-
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => callback.apply(this, args), wait);
-  };
-};
-
 function startParse(value) {
   clearInnerText(output);
   tokenize(value);
@@ -162,7 +142,6 @@ function startParse(value) {
   const results = getResultTokens();
 
   updateOutputDisplay(results);
-  storage.save('text', value);
   populateLastEdit(value);
 };
 
@@ -430,17 +409,31 @@ function handleInput(e) {
   const value = input.innerText;
 
   startParse(value);
+  saveToStorage(e);
 };
 
-const handleScroll = debounce(function(e) {
-  storage.save('scroll', document.body.scrollTop);
-}, 500);
+const handleScroll = debounce(async function(e) {
+  await storage.save('scroll', document.body.scrollTop);
+}, 1000);
 
-function handleKeydown(e) {
+const saveToStorage = debounce(async function(e) {
+  await storage.save('text', input.innerText);
+}, 1000);
+
+function debounce(callback, wait) {
+  let timeout;
+
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => callback.apply(this, args), wait);
+  };
+};
+
+async function handleKeydown(e) {
   if (e.key === 'Tab') {
     e.preventDefault();
     insertNodeAtCaret('\t');
-    storage.save('text', input.innerText);
+    saveToStorage(e);
   }
 };
 
