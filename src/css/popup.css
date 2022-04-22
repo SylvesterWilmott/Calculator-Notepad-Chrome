@@ -104,6 +104,7 @@ body {
   resize: none;
   position: relative;
   flex: 0 0 62%;
+  tab-size: 3;
 }
 
 .display {
