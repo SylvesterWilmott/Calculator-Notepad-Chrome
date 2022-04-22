@@ -1,5 +1,7 @@
 'use strict';
 
+import * as storage from './js/storage.js';
+
 let menuItems = [
   {
     id: 'theme',
@@ -63,74 +65,68 @@ let menuItems = [
   }
 ];
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(init);
+chrome.contextMenus.onClicked.addListener(handleClick);
+
+async function init() {
   for (const item of menuItems) {
+    await createMenuItem(item);
+  }
+
+  updateRadioControls();
+};
+
+function createMenuItem(item) {
+  return new Promise((resolve, reject) => {
     chrome.contextMenus.create(item, function() {
       if (chrome.runtime.lastError) {
-        console.log(err.message);
+        console.log(chrome.runtime.lastError.message);
       }
-
-      updatePrefsDisplay();
+      resolve();
     });
-  }
-});
+  });
+};
 
-chrome.contextMenus.onClicked.addListener(function(info) {
-  let menuId = info.menuItemId;
+async function handleClick(info) {
+  const menuId = info.menuItemId;
 
   switch(menuId) {
     case 'clear':
-      clearFromStorage('text');
+      await storage.clear('text');
       break;
     case 'resetPrefs':
-      clearFromStorage('theme', 'font');
+      await storage.clear('theme');
+      await storage.clear('font');
+
+      updateRadioControls();
       break;
     case 'system':
     case 'light':
     case 'dark':
-      saveToStorage('theme', menuId);
+      await storage.save('theme', menuId);
       break;
     case 'sans':
     case 'mono':
-      saveToStorage('font', menuId);
+      await storage.save('font', menuId);
       break;
   }
-});
-
-async function updatePrefsDisplay() {
-  let theme = await loadFromStorage('theme', 'system');
-  let font = await loadFromStorage('font', 'mono');
-
-  chrome.contextMenus.update(theme, { checked: true });
-  chrome.contextMenus.update(font, { checked: true });
 };
 
-function clearFromStorage(...keys) {
-  for (const key of keys) {
-    chrome.storage.local.remove(key, function() {
-      if (chrome.runtime.lastError) {
-        console.log(err.message);
-      }
+async function updateRadioControls() {
+  let theme = await storage.load('theme', 'system');
+  let font  = await storage.load('font', 'mono');
 
-      updatePrefsDisplay();
-    });
-  }
+  checkRadioControl(theme, font);
 };
 
-function saveToStorage(key, value) {
-  chrome.storage.local.set({ [key]: value });
-};
-
-function loadFromStorage(key, defaults) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get({
-      [key]: defaults
-    }, function(value) {
+function checkRadioControl(...ids) {
+  for (const id of ids) {
+    chrome.contextMenus.update(id, {
+      checked: true
+    }, function() {
       if (chrome.runtime.lastError) {
         console.log(chrome.runtime.lastError.message);
       }
-
-      resolve(value[key]);
     });
-  });
+  }
 };
