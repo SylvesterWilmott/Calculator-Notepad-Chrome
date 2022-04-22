@@ -1,8 +1,9 @@
 'use strict';
 
 import * as constants from './constants.js';
-import * as regex from './regex.js';
-import * as reserved from './reserved.js';
+import * as regex     from './regex.js';
+import * as reserved  from './reserved.js';
+import * as storage   from './storage.js';
 
 let input;
 let output;
@@ -11,31 +12,49 @@ let expressions = []; // All tokenized expressions by line
 
 document.addEventListener('DOMContentLoaded', init);
 
+
 async function init() {
   input = document.getElementById('input');
   output = document.getElementById('output');
 
-  addConstantsTo(reserved.identifiers);
-  addConstantsTo(constants.identifiers);
+  const data = await loadUserData();
 
-  const storedText = await loadFromStorage('text', '');
-  const scrollPos = await loadFromStorage('scroll', 0);
-  const theme = await loadFromStorage('theme', 'system');
-  const font = await loadFromStorage('font', 'mono');
+  initConstants();
+  populateLastEdit(data.text);
 
-  lastEdit = storedText.split('\n');
-
-  tokenize(storedText, 'init'); // Tokens are added to expressions array
+  tokenize(data.text, 'init');
 
   const results = getResultTokens();
 
-  addclassToBody(theme, font);
-  updateInputDisplay(storedText);
+  addclassToBody(data.theme, data.font);
+  updateInputDisplay(data.text);
   updateOutputDisplay(results);
-  setScrollPos(scrollPos);
+  setScrollPos(data.scroll);
   initListeners();
+  showUi();
+};
 
-  document.body.classList.remove('hidden');
+async function loadUserData() {
+  const text   = await storage.load('text', '');
+  const scroll = await storage.load('scroll', 0);
+  const theme  = await storage.load('theme', 'system');
+  const font   = await storage.load('font', 'mono');
+
+  return {
+    text: text,
+    scroll: scroll,
+    theme: theme,
+    font: font
+  }
+};
+
+function populateLastEdit(value) {
+  lastEdit = value.split('\n');
+};
+
+function initConstants() {
+  addConstantsTo(reserved.identifiers);
+  addConstantsTo(constants.identifiers);
 };
 
 function addConstantsTo(arr) {
@@ -95,17 +114,12 @@ function setScrollPos(value) {
 function initListeners() {
   input.addEventListener('input', handleInput, false);
   input.addEventListener('keydown', handleKeydown, false);
-  output.addEventListener('click', copyInnerTextToClipboard, false);
+  output.addEventListener('click', handleClick, false);
   document.body.addEventListener('scroll', handleScroll, false);
 };
 
-function debounce(callback, wait) {
-  let timeout;
-
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => callback.apply(this, args), wait);
-  };
+function showUi() {
+  document.body.classList.remove('hidden');
 };
 
 function validateWord(arr, word) {
@@ -128,21 +142,28 @@ function insertNodeAtCaret(node) {
   sel.addRange(range);
 };
 
-function clearInnerText(el) {
-  el.innerText = '';
+function clearInnerText(element) {
+  element.innerText = '';
+};
+
+function debounce(callback, wait) {
+  let timeout;
+
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => callback.apply(this, args), wait);
+  };
 };
 
 function startParse(value) {
   clearInnerText(output);
-
   tokenize(value);
 
   const results = getResultTokens();
 
   updateOutputDisplay(results);
-  saveToStorage('text', value);
-
-  lastEdit = value.split('\n');
+  storage.save('text', value);
+  populateLastEdit(value);
 };
 
 function tokenize(value, src) {
@@ -412,20 +433,18 @@ function handleInput(e) {
 };
 
 const handleScroll = debounce(function(e) {
-  saveToStorage('scroll', document.body.scrollTop);
+  storage.save('scroll', document.body.scrollTop);
 }, 500);
 
 function handleKeydown(e) {
-  switch (e.key) {
-    case 'Tab':
-      e.preventDefault();
-      insertNodeAtCaret('\t');
-      saveToStorage('text', input.innerText);
-      break;
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    insertNodeAtCaret('\t');
+    storage.save('text', input.innerText);
   }
 };
 
-async function copyInnerTextToClipboard(e) {
+async function handleClick(e) {
   const target = e.target;
   const classes = ['result', 'variable'];
 
@@ -440,23 +459,4 @@ async function copyInnerTextToClipboard(e) {
       alert('Failed to copy text');
     }
   }
-};
-
-// Chrome storage
-
-function saveToStorage(key, value) {
-  chrome.storage.local.set({ [key]: value });
-};
-
-function loadFromStorage(key, defaults) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get({
-      [key]: defaults
-    }, function(value) {
-      if (chrome.runtime.lastError) {
-        console.log(chrome.runtime.lastError.message);
-      }
-      resolve(value[key]);
-    });
-  });
 };
