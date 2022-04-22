@@ -409,14 +409,26 @@ function handleInput(e) {
   const value = input.innerText;
 
   startParse(value);
-  saveToStorage(e);
+  saveText(e);
 };
 
-const handleScroll = debounce(async function(e) {
+function handleScroll(e) {
+  saveScroll(e);
+};
+
+function handleKeydown(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    insertNodeAtCaret('\t');
+    saveText(e);
+  }
+};
+
+const saveScroll = debounce(async function(e) {
   await storage.save('scroll', document.body.scrollTop);
 }, 1000);
 
-const saveToStorage = debounce(async function(e) {
+const saveText = debounce(async function(e) {
   await storage.save('text', input.innerText);
 }, 1000);
 
@@ -427,14 +439,6 @@ function debounce(callback, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(() => callback.apply(this, args), wait);
   };
-};
-
-async function handleKeydown(e) {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    insertNodeAtCaret('\t');
-    saveToStorage(e);
-  }
 };
 
 async function handleClick(e) {
