@@ -153,7 +153,7 @@ function tokenize(value, src) {
   let editedVariables = [];
 
   for (const [i, line] of lines.entries()) {
-    let str = line;
+    let str = line.replace(/\t/g, ''); // remove all tab characters
     let comment = str.match(regex.commentRegex);
     let heading = str.match(regex.headingRegex);
     let variable = str.match(regex.variableRegex);
