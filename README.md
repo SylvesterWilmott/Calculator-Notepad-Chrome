@@ -60,12 +60,13 @@ Total amount:
 | `cos`            | Cosine eg. `cos 30`                     |
 | `tan`            | Tangent eg. `tan 10`                    |
 
-### Constants
+### Mathematical Constants
 
 | Token            | Details                                 |
 | :--------------- | :-------------------------------------- |
 | `pi`             | Mathematical Constant Pi                |
 | `e`              | Mathematical Constant Euler's Number    |
+| `g`              | Mathematical Constant Euler's Constant  |
 | `phi`            | Mathematical Constant Golden Ratio      |
 
 ### Variables
