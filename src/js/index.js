@@ -5,6 +5,7 @@ import * as regex     from './regex.js';
 import * as reserved  from './reserved.js';
 import * as storage   from './storage.js';
 
+let container;
 let input;
 let output;
 let lastEdit = []; // Last known edit by line
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 
 async function init() {
+  container = document.getElementById('container');
   input = document.getElementById('input');
   output = document.getElementById('output');
 
@@ -108,7 +110,7 @@ function initListeners() {
 };
 
 function showUi() {
-  document.body.classList.remove('hidden');
+  container.style.opacity = 1;
 };
 
 function validateWord(arr, word) {
