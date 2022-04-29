@@ -81,8 +81,6 @@ body {
 
 body {
   background-color: var(--background);
-  opacity: 1;
-  transition: opacity 250ms ease-out;
 }
 
 .hidden {
@@ -93,6 +91,7 @@ body {
   background-color: var(--background);
   display: flex;
   justify-content: space-between;
+  transition: opacity 250ms ease-out;
 }
 
 .input {
