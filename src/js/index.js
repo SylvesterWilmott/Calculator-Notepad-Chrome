@@ -13,7 +13,6 @@ let expressions = []; // All tokenized expressions by line
 
 document.addEventListener('DOMContentLoaded', init);
 
-
 async function init() {
   container = document.getElementById('container');
   input = document.getElementById('input');
