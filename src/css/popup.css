@@ -21,14 +21,14 @@
   --primary: rgba(0,0,0,0.85);
   --secondary: rgba(0,0,0,0.25);
 
-  --accent-result: rgba(0,0,0,0.85);
-  --accent-variable: rgba(0,0,0,0.5);
-  --accent-error: #D8432A;
+  --accent-result: #197864;
+  --accent-variable: #244993;
+  --accent-error: #AA4938;
 
   --stroke: rgba(0,0,0,0.08);
 
-  --link-hover: rgba(0,0,0,0.1);
-  --link-active: rgba(0,0,0,0.15);
+  --link-hover: rgba(0,0,0,0.08);
+  --link-active: rgba(0,0,0,0.11);
 }
 
 .dark {
@@ -40,14 +40,14 @@
   --primary: rgba(255,255,255,0.85);
   --secondary: rgba(255,255,255,0.25);
 
-  --accent-result: rgba(255,255,255,0.85);
-  --accent-variable: rgba(255,255,255,0.55);
-  --accent-error: #FF806D;
+  --accent-result: #97C4BB;
+  --accent-variable: #97A6C4;
+  --accent-error: #CD9990;
 
   --stroke: rgba(255,255,255,0.08);
 
-  --link-hover: rgba(255,255,255,0.1);
-  --link-active: rgba(255,255,255,0.15);
+  --link-hover: rgba(255,255,255,0.08);
+  --link-active: rgba(255,255,255,0.11);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -60,9 +60,9 @@
     --primary: rgba(255,255,255,0.85);
     --secondary: rgba(255,255,255,0.25);
 
-    --accent-result: rgba(255,255,255,0.85);
-    --accent-variable: rgba(255,255,255,0.55);
-    --accent-error: #FF806D;
+    --accent-result: #97C4BB;
+    --accent-variable: #97A6C4;
+    --accent-error: #CD9990;
 
     --stroke: rgba(255,255,255,0.1);
 
@@ -158,7 +158,6 @@ body {
 .result:hover,
 .variable:hover {
   cursor: pointer;
-  color: var(--primary);
   background-color: var(--link-hover);
 }
 
