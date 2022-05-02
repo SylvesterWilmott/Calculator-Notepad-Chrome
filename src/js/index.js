@@ -13,7 +13,6 @@ let expressions = []; // All tokenized expressions by line
 
 document.addEventListener('DOMContentLoaded', init);
 
-
 async function init() {
   container = document.getElementById('container');
   input = document.getElementById('input');
@@ -73,20 +72,17 @@ function updateOutputDisplay(results) {
 
     value = typeof value === 'number' ? value.toLocaleString(undefined, { maximumFractionDigits: 10 }) : value;
 
-    span.innerText = value;
-
     switch (result.type) {
       case 'null':
-        span.classList.add('null');
-        break;
       case 'variable':
-        span.classList.add('variable');
-        break;
       case 'result':
-        span.classList.add('result');
+        span.innerText = value;
+        span.classList.add(result.type);
         break;
       case 'error':
-        span.classList.add('error');
+        span.innerText = 'Error';
+        span.setAttribute('title', value);
+        span.classList.add(result.type);
         break;
     }
 
@@ -290,7 +286,7 @@ function tokenize(value, src) {
       return {
         type: 'error',
         name: name,
-        value: 'Error: Invalid variable name'
+        value: 'Invalid variable name'
       }
     }
 
@@ -298,7 +294,7 @@ function tokenize(value, src) {
       return {
         type: 'error',
         name: name,
-        value: 'Error: Variable already declared'
+        value: 'Variable already declared'
       }
     }
 
