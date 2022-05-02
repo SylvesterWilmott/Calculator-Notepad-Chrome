@@ -152,6 +152,7 @@ body {
 }
 
 .error {
+  cursor: default;
   color: var(--accent-error);
 }
 
