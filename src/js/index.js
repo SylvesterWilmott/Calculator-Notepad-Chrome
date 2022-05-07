@@ -145,7 +145,7 @@ function startParse(value) {
 
 function tokenize(value, src) {
   let lines = value.split('\n');
-  let pass;
+  let token;
 
   let isEdited = false;
   let editedVariables = [];
@@ -173,16 +173,17 @@ function tokenize(value, src) {
       isEdited = false;
 
       if (str.length === 0) {
-        pass = {
+        token = {
           type: 'newline',
           value: ''
         }
       } else if (comment || heading) {
-        pass = {
+        token = {
           type: 'comment',
           value: str.trim()
         }
       } else {
+        // Expand abbrebiated numbers
           if (str.match(regex.numberSuffixRegex)) {
             let matches = [...str.matchAll(regex.numberSuffixRegex)];
 
@@ -211,8 +212,10 @@ function tokenize(value, src) {
           }
 
           if (variable) {
-            pass = getVariableObject(str, expressions, i);
-          } else {
+            token = getVariableToken(str, expressions, i);
+          }
+
+          else {
             let tmp = str;
 
             if (tmp.includes('=')) {
@@ -243,13 +246,13 @@ function tokenize(value, src) {
                 result;
               }
 
-              pass = {
+              token = {
                 type: 'expression',
                 value: tmp.trim(),
                 result: result
               }
             } else {
-              pass = {
+              token = {
                 type: 'comment',
                 value: tmp.trim()
               }
@@ -257,11 +260,11 @@ function tokenize(value, src) {
           }
       }
 
-      expressions[i] = pass;
+      expressions[i] = token;
     }
   }
 
-  function getVariableObject(str, expressions, i) {
+  function getVariableToken(str, expressions, i) {
     let equalsBoundary = new RegExp(makeRegexBoundary('is') , 'g');
 
     if (str.match(equalsBoundary)) {
@@ -354,6 +357,8 @@ function tokenize(value, src) {
   if (expressions.length !== lines.length) {
     expressions.length = lines.length;
   }
+
+  editedVariables = []; // Reset
 };
 
 function getResultTokens() {
