@@ -161,9 +161,7 @@ function tokenize(value, src) {
     let str = line;
     let lastEditStr = lastEdit[i];
 
-    console.log(lastEdit[i]);
-
-    if (str && str.match(regex.tabRegex)) {
+    if (str.match(regex.tabRegex)) {
       str = removeTabs(str);
     }
 
@@ -176,7 +174,7 @@ function tokenize(value, src) {
     let variable = str.match(regex.variableRegex);
     let words = str.match(regex.wordRegex);
 
-    if (str !== lastEditStr) {
+    if (!lastEditStr || str !== lastEditStr) {
       isEdited = true; // Mark lines that are edited
     }
 
