@@ -161,11 +161,13 @@ function tokenize(value, src) {
     let str = line;
     let lastEditStr = lastEdit[i];
 
-    if (str.match(regex.tabRegex)) {
+    console.log(lastEdit[i]);
+
+    if (str && str.match(regex.tabRegex)) {
       str = removeTabs(str);
     }
 
-    if (lastEditStr.match(regex.tabRegex)) {
+    if (lastEdit[i] && lastEditStr.match(regex.tabRegex)) {
       lastEditStr = removeTabs(lastEditStr);
     }
 
