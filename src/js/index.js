@@ -146,9 +146,8 @@ function startParse(value) {
   populateLastEdit(value);
 }
 
-function trimValue(value) {
-  value = value.replace(/\t/g, "");
-  return value;
+function removeTabs(value) {
+  return value.replace(/\t/g, "");
 }
 
 function tokenize(value, src) {
@@ -159,8 +158,16 @@ function tokenize(value, src) {
   let editedVariables = [];
 
   for (const [i, line] of lines.entries()) {
-    let str = trimValue(line);
-    let lastEditStr = trimValue(lastEdit[i]);
+    let str = line;
+    let lastEditStr = lastEdit[i];
+
+    if (str.match(regex.tabRegex)) {
+      str = removeTabs(str);
+    }
+
+    if (lastEditStr.match(regex.tabRegex)) {
+      lastEditStr = removeTabs(lastEditStr);
+    }
 
     let comment = str.match(regex.commentRegex);
     let heading = str.match(regex.headingRegex);
