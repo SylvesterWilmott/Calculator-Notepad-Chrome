@@ -22,5 +22,5 @@ export let identifiers = [
   "atan",
   "asinh",
   "acosh",
-  "atanh"
+  "atanh",
 ];

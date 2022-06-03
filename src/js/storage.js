@@ -4,9 +4,9 @@ export function save(key, value) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.set(
       {
-        [key]: value
+        [key]: value,
       },
-      function() {
+      function () {
         if (chrome.runtime.lastError) {
           console.log(chrome.runtime.lastError.message);
         }
@@ -20,9 +20,9 @@ export function load(key, defaults) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(
       {
-        [key]: defaults
+        [key]: defaults,
       },
-      function(value) {
+      function (value) {
         if (chrome.runtime.lastError) {
           console.log(chrome.runtime.lastError.message);
         }
@@ -34,7 +34,7 @@ export function load(key, defaults) {
 
 export function clear(key) {
   return new Promise((resolve, reject) => {
-    chrome.storage.local.remove(key, function() {
+    chrome.storage.local.remove(key, function () {
       if (chrome.runtime.lastError) {
         console.log(chrome.runtime.lastError.message);
       }

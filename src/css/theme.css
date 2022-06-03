@@ -1,8 +1,10 @@
 .sans {
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 .mono {
-  font-family: 'JetBrains Mono', 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, Monaco, 'Liberation Mono', 'Lucida Console', monospace;
+  font-family: "JetBrains Mono", "SF Mono", SFMono-Regular, ui-monospace, Menlo,
+    Consolas, Monaco, "Liberation Mono", "Lucida Console", monospace;
 }
 
 :root {
@@ -11,20 +13,20 @@
 
 .system,
 .light {
-  --background: #FFFFFF;
-  --surface: #FFFFFF;
+  --background: #ffffff;
+  --surface: #ffffff;
 
-  --primary: rgba(0,0,0,0.85);
-  --secondary: rgba(0,0,0,0.25);
+  --primary: rgba(0, 0, 0, 0.85);
+  --secondary: rgba(0, 0, 0, 0.25);
 
   --accent-result: #197864;
   --accent-variable: #244993;
-  --accent-error: #AA4938;
+  --accent-error: #aa4938;
 
-  --stroke: rgba(0,0,0,0.08);
+  --stroke: rgba(0, 0, 0, 0.08);
 
-  --link-hover: rgba(0,0,0,0.08);
-  --link-active: rgba(0,0,0,0.11);
+  --link-hover: rgba(0, 0, 0, 0.08);
+  --link-active: rgba(0, 0, 0, 0.11);
 }
 
 .dark {
@@ -33,17 +35,17 @@
   --background: #202124;
   --surface: #202124;
 
-  --primary: rgba(255,255,255,0.85);
-  --secondary: rgba(255,255,255,0.25);
+  --primary: rgba(255, 255, 255, 0.85);
+  --secondary: rgba(255, 255, 255, 0.25);
 
-  --accent-result: #97C4BB;
-  --accent-variable: #97A6C4;
-  --accent-error: #CD9990;
+  --accent-result: #97c4bb;
+  --accent-variable: #97a6c4;
+  --accent-error: #cd9990;
 
-  --stroke: rgba(255,255,255,0.08);
+  --stroke: rgba(255, 255, 255, 0.08);
 
-  --link-hover: rgba(255,255,255,0.08);
-  --link-active: rgba(255,255,255,0.11);
+  --link-hover: rgba(255, 255, 255, 0.08);
+  --link-active: rgba(255, 255, 255, 0.11);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,16 +57,16 @@
     --background: #202124;
     --surface: #202124;
 
-    --primary: rgba(255,255,255,0.85);
-    --secondary: rgba(255,255,255,0.25);
+    --primary: rgba(255, 255, 255, 0.85);
+    --secondary: rgba(255, 255, 255, 0.25);
 
-    --accent-result: #97C4BB;
-    --accent-variable: #97A6C4;
-    --accent-error: #CD9990;
+    --accent-result: #97c4bb;
+    --accent-variable: #97a6c4;
+    --accent-error: #cd9990;
 
-    --stroke: rgba(255,255,255,0.1);
+    --stroke: rgba(255, 255, 255, 0.1);
 
-    --link-hover: rgba(255,255,255,0.1);
-    --link-active: rgba(255,255,255,0.15);
+    --link-hover: rgba(255, 255, 255, 0.1);
+    --link-active: rgba(255, 255, 255, 0.15);
   }
 }
