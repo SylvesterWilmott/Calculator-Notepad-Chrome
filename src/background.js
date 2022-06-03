@@ -5,64 +5,64 @@ import * as storage from "./js/storage.js";
 let menuItems = [
   {
     id: "theme",
-    title: "Theme",
-    contexts: ["action"]
+    title: chrome.i18n.getMessage("menu_theme"),
+    contexts: ["action"],
   },
   {
     id: "system",
-    title: "System",
+    title: chrome.i18n.getMessage("menu_theme_system"),
     contexts: ["action"],
     parentId: "theme",
-    type: "radio"
+    type: "radio",
   },
   {
     id: "light",
-    title: "Light",
+    title: chrome.i18n.getMessage("menu_theme_light"),
     contexts: ["action"],
     parentId: "theme",
-    type: "radio"
+    type: "radio",
   },
   {
     id: "dark",
-    title: "Dark",
+    title: chrome.i18n.getMessage("menu_theme_dark"),
     contexts: ["action"],
     parentId: "theme",
-    type: "radio"
+    type: "radio",
   },
   {
     id: "font",
-    title: "Font",
-    contexts: ["action"]
+    title: chrome.i18n.getMessage("menu_font"),
+    contexts: ["action"],
   },
   {
     id: "mono",
-    title: "Monospace",
+    title: chrome.i18n.getMessage("menu_font_monospace"),
     contexts: ["action"],
     parentId: "font",
-    type: "radio"
+    type: "radio",
   },
   {
     id: "sans",
-    title: "Sans Serif",
+    title: chrome.i18n.getMessage("menu_font_sans"),
     contexts: ["action"],
     parentId: "font",
-    type: "radio"
+    type: "radio",
   },
   {
     id: "separator_main_1",
     type: "separator",
-    contexts: ["action"]
+    contexts: ["action"],
   },
   {
     id: "clear",
-    title: "Clear Data",
-    contexts: ["action"]
+    title: chrome.i18n.getMessage("menu_clearData"),
+    contexts: ["action"],
   },
   {
     id: "resetPrefs",
-    title: "Reset Preferences",
-    contexts: ["action"]
-  }
+    title: chrome.i18n.getMessage("menu_resetPrefs"),
+    contexts: ["action"],
+  },
 ];
 
 chrome.runtime.onInstalled.addListener(init);
@@ -78,7 +78,7 @@ async function init() {
 
 function createMenuItem(item) {
   return new Promise((resolve, reject) => {
-    chrome.contextMenus.create(item, function() {
+    chrome.contextMenus.create(item, function () {
       if (chrome.runtime.lastError) {
         console.log(chrome.runtime.lastError.message);
       }
@@ -124,9 +124,9 @@ function checkRadio(...ids) {
     chrome.contextMenus.update(
       id,
       {
-        checked: true
+        checked: true,
       },
-      function() {
+      function () {
         if (chrome.runtime.lastError) {
           console.log(chrome.runtime.lastError.message);
         }
