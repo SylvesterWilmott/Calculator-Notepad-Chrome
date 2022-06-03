@@ -1,8 +1,9 @@
 {
-  "name": "Calculator Notepad",
-  "description": "A free-form calculator notepad that performs calculations as you type.",
-  "version": "1.4.5",
+  "name": "__MSG_ext_name__",
+  "description": "__MSG_ext_description__",
+  "version": "1.4.6",
   "manifest_version": 3,
+  "default_locale": "en",
   "icons": {
     "16": "images/icon16.png",
     "24": "images/icon24.png",
@@ -10,16 +11,13 @@
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
-  "permissions": [
-    "storage",
-    "contextMenus"
-  ],
+  "permissions": ["storage", "contextMenus"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
   "action": {
-    "default_title": "Calculator Notepad",
+    "default_title": "__MSG_ext_name__",
     "default_popup": "html/index.html"
   }
 }
