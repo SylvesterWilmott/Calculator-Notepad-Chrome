@@ -118,18 +118,10 @@ function validateWord(arr, word) {
   return status;
 }
 
-function insertNodeAtCaret(node) {
-  let sel = document.getSelection();
-  let range = sel.getRangeAt(0);
-  let newNode = document.createTextNode(node);
-
-  range.insertNode(newNode);
-
-  range.setStartAfter(newNode);
-  range.setEndAfter(newNode);
-
-  sel.removeAllRanges();
-  sel.addRange(range);
+function insertTextAtCaret(...nodes) {
+  for (const node of nodes) {
+    document.execCommand("insertText", false, node);
+  }
 }
 
 function clearInnerText(element) {
@@ -192,12 +184,12 @@ function tokenize(value, src) {
       if (str.length === 0) {
         token = {
           type: "newline",
-          value: ""
+          value: "",
         };
       } else if (comment || heading) {
         token = {
           type: "comment",
-          value: str.trim()
+          value: str.trim(),
         };
       } else {
         // Expand abbrebiated numbers
@@ -243,12 +235,12 @@ function tokenize(value, src) {
 
               if (isConstant) {
                 let find = constants.constants.find(
-                  x => x.indentifier === word
+                  (x) => x.indentifier === word
                 );
                 tmp = replaceTextWithValue(tmp, word, find.value);
               }
 
-              let obj = expressions.find(x => x.name === word);
+              let obj = expressions.find((x) => x.name === word);
               tmp = obj ? replaceTextWithValue(tmp, word, obj.value) : tmp;
             }
           }
@@ -266,12 +258,12 @@ function tokenize(value, src) {
             token = {
               type: "expression",
               value: tmp.trim(),
-              result: result
+              result: result,
             };
           } else {
             token = {
               type: "comment",
-              value: tmp.trim()
+              value: tmp.trim(),
             };
           }
         }
@@ -301,13 +293,13 @@ function tokenize(value, src) {
     }
 
     let isReserved = validateWord(reserved.identifiers, name);
-    let isExistingVariableIndex = expressions.findIndex(x => x.name === name);
+    let isExistingVariableIndex = expressions.findIndex((x) => x.name === name);
 
     if (isReserved) {
       return {
         type: "error",
         name: name,
-        value: "Invalid variable name"
+        value: "Invalid variable name",
       };
     }
 
@@ -315,7 +307,7 @@ function tokenize(value, src) {
       return {
         type: "error",
         name: name,
-        value: "Variable already declared"
+        value: "Variable already declared",
       };
     }
 
@@ -326,11 +318,11 @@ function tokenize(value, src) {
         let isConstant = validateWord(constants.identifiers, word);
 
         if (isConstant) {
-          let find = constants.constants.find(x => x.indentifier === word);
+          let find = constants.constants.find((x) => x.indentifier === word);
           value = replaceTextWithValue(value, word, find.value);
         }
 
-        let obj = expressions.find(x => x.name === word);
+        let obj = expressions.find((x) => x.name === word);
         value = obj
           ? replaceTextWithValue(value, word, obj.value)
           : value.replace(word, "");
@@ -358,7 +350,7 @@ function tokenize(value, src) {
     return {
       type: "variable",
       name: name,
-      value: value
+      value: value,
     };
   }
 
@@ -390,19 +382,19 @@ function getResultTokens() {
       case "comment":
         results.push({
           type: "null",
-          value: ""
+          value: "",
         });
         break;
       case "variable":
         results.push({
           type: "variable",
-          value: expression.value
+          value: expression.value,
         });
         break;
       case "error":
         results.push({
           type: "error",
-          value: expression.value
+          value: expression.value,
         });
         break;
       case "expression":
@@ -411,12 +403,12 @@ function getResultTokens() {
         if (isNaN(result) || result == null) {
           results.push({
             type: "null",
-            value: ""
+            value: "",
           });
         } else {
           results.push({
             type: "result",
-            value: result
+            value: result,
           });
         }
         break;
@@ -438,7 +430,7 @@ function handleInput(e) {
 function handleKeydown(e) {
   if (e.key === "Tab") {
     e.preventDefault();
-    insertNodeAtCaret("\t");
+    insertTextAtCaret("\t");
     saveText(e);
   }
 }
@@ -447,7 +439,7 @@ async function handleClick(e) {
   const target = e.target;
   const classes = ["result", "variable"];
 
-  if (classes.some(className => target.classList.contains(className))) {
+  if (classes.some((className) => target.classList.contains(className))) {
     let value = target.innerText;
 
     value = value.replace(/,/g, "");
@@ -464,11 +456,11 @@ function handleScroll(e) {
   saveScroll(e);
 }
 
-const saveScroll = debounce(async function(e) {
+const saveScroll = debounce(async function (e) {
   await storage.save("scroll", document.body.scrollTop);
 }, 1000);
 
-const saveText = debounce(async function(e) {
+const saveText = debounce(async function (e) {
   await storage.save("text", input.innerText);
 }, 1000);
 

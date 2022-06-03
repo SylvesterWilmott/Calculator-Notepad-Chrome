@@ -65,7 +65,7 @@ body {
 }
 
 .input[placeholder]:empty:focus:before {
-    content: "";
+  content: "";
 }
 
 .result {
