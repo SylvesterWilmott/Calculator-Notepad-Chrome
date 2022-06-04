@@ -79,8 +79,6 @@ function updateOutputDisplay(results) {
 
     switch (result.type) {
       case "null":
-        line.appendChild(br);
-        break;
       case "variable":
       case "result":
         button = document.createElement("button");
@@ -98,6 +96,10 @@ function updateOutputDisplay(results) {
     }
 
     output.appendChild(line);
+
+    if (len > i + 1) {
+      output.appendChild(br);
+    }
   }
 }
 
