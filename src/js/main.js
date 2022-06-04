@@ -102,10 +102,10 @@ function setScrollPos(value) {
 }
 
 function initListeners() {
-  input.addEventListener("input", handleInput, false);
-  input.addEventListener("keydown", handleKeydown, false);
-  output.addEventListener("click", handleClick, false);
-  document.body.addEventListener("scroll", handleScroll, false);
+  input.addEventListener("input", inputOnInput, false);
+  input.addEventListener("keydown", inputOnKeydown, false);
+  output.addEventListener("click", outputOnClick, false);
+  document.body.addEventListener("scroll", documentOnScroll, false);
 }
 
 function showUi() {
@@ -126,6 +126,14 @@ function insertTextAtCaret(...nodes) {
 
 function clearInnerText(element) {
   element.innerText = "";
+}
+
+async function copyValueToClipboard(value) {
+  try {
+    await navigator.clipboard.writeText(value);
+  } catch (err) {
+    alert("Failed to copy text");
+  }
 }
 
 function startParse(value) {
@@ -420,14 +428,14 @@ function getResultTokens() {
 
 // Event handlers
 
-function handleInput(e) {
+function inputOnInput(e) {
   const value = input.innerText;
 
   startParse(value);
   saveText(e);
 }
 
-function handleKeydown(e) {
+function inputOnKeydown(e) {
   if (e.key === "Tab") {
     e.preventDefault();
     insertTextAtCaret("\t");
@@ -435,7 +443,9 @@ function handleKeydown(e) {
   }
 }
 
-async function handleClick(e) {
+function outputOnClick(e) {
+  const activeEl = document.activeElement;
+  const shiftPressed = e.shiftKey;
   const target = e.target;
   const classes = ["result", "variable"];
 
@@ -444,15 +454,15 @@ async function handleClick(e) {
 
     value = value.replace(/,/g, "");
 
-    try {
-      await navigator.clipboard.writeText(value);
-    } catch (err) {
-      alert("Failed to copy text");
+    if (shiftPressed) {
+      insertTextAtCaret(value);
+    } else {
+      copyValueToClipboard(value);
     }
   }
 }
 
-function handleScroll(e) {
+function documentOnScroll(e) {
   saveScroll(e);
 }
 
