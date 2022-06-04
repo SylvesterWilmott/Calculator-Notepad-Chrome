@@ -65,12 +65,11 @@ function updateInputDisplay(text) {
 
 function updateOutputDisplay(results) {
   for (const [i, result] of results.entries()) {
-    let line = document.createElement("div");
-    line.classList.add("line");
     let button;
     let span;
     let br = document.createElement("br");
     let value = result.value;
+    let len = results.length;
 
     value =
       typeof value === "number"
@@ -79,23 +78,23 @@ function updateOutputDisplay(results) {
 
     switch (result.type) {
       case "null":
+        break;
       case "variable":
       case "result":
         button = document.createElement("button");
         button.innerText = value;
+        button.classList.add("result-btn");
         button.classList.add(result.type);
-        line.appendChild(button);
+        output.appendChild(button);
         break;
       case "error":
         span = document.createElement("span");
         span.innerText = "Error";
         span.setAttribute("title", value);
         span.classList.add(result.type);
-        line.appendChild(span);
+        output.appendChild(span);
         break;
     }
-
-    output.appendChild(line);
 
     if (len > i + 1) {
       output.appendChild(br);
