@@ -1,8 +1,8 @@
-.sans {
+.sans * {
   font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
-.mono {
+.mono * {
   font-family: "JetBrains Mono", "SF Mono", SFMono-Regular, ui-monospace, Menlo,
     Consolas, Monaco, "Liberation Mono", "Lucida Console", monospace;
 }
