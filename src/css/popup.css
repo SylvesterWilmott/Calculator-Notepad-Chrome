@@ -49,12 +49,24 @@ body {
 .input,
 .display {
   font-size: 16px;
-  line-height: 1.4375em;
+  line-height: 24px;
   min-height: 100vh;
   overflow-y: visible;
   overflow-x: auto;
   padding: 20px;
   white-space: pre;
+}
+
+.display * {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.result-btn {
+  height: 24px;
+  border: none;
+  outline: none;
+  background-color: transparent;
 }
 
 .input[placeholder]:empty:before {
@@ -78,7 +90,7 @@ body {
 
 .result,
 .variable {
-  padding: 1px 6px;
+  padding: 0 6px;
   border-radius: 999px;
   position: relative;
   left: -6px;

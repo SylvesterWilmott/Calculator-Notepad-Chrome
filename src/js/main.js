@@ -65,7 +65,8 @@ function updateInputDisplay(text) {
 
 function updateOutputDisplay(results) {
   for (const [i, result] of results.entries()) {
-    let span = document.createElement("span");
+    let button;
+    let span;
     let br = document.createElement("br");
     let value = result.value;
     let len = results.length;
@@ -77,19 +78,23 @@ function updateOutputDisplay(results) {
 
     switch (result.type) {
       case "null":
+        break;
       case "variable":
       case "result":
-        span.innerText = value;
-        span.classList.add(result.type);
+        button = document.createElement("button");
+        button.innerText = value;
+        button.classList.add("result-btn");
+        button.classList.add(result.type);
+        output.appendChild(button);
         break;
       case "error":
+        span = document.createElement("span");
         span.innerText = "Error";
         span.setAttribute("title", value);
         span.classList.add(result.type);
+        output.appendChild(span);
         break;
     }
-
-    output.appendChild(span);
 
     if (len > i + 1) {
       output.appendChild(br);
