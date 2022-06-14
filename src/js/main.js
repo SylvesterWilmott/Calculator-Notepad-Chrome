@@ -5,7 +5,6 @@ import * as regex from "./regex.js";
 import * as reserved from "./reserved.js";
 import * as storage from "./storage.js";
 
-let container;
 let input;
 let output;
 let lastEdit = []; // Last known edit by line
@@ -14,7 +13,6 @@ let expressions = []; // All tokenized expressions by line
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  container = document.getElementById("container");
   input = document.getElementById("input");
   output = document.getElementById("output");
 
@@ -114,7 +112,7 @@ function initListeners() {
 }
 
 function showUi() {
-  container.style.opacity = 1;
+  document.getElementById("container").style.opacity = 1;
 }
 
 function validateWord(arr, word) {
